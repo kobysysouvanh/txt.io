@@ -1,16 +1,31 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useForm, FieldValues, SubmitHandler } from "react-hook-form";
 import Input from "./Input";
 import Button from "./Button";
-import Avatar from "./Avatar";
+import Avatar from "./AvatarAuthForm";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 type Variant = "LOGIN" | "REGISTER";
 
 const AuthForm = () => {
+  const session = useSession()
+  const router = useRouter()
   const [variant, setVariant] = useState<Variant>("LOGIN");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (session?.status === "authenticated") {
+      router.push("/home")
+    }
+  
+    
+  }, [session?.status, router])
+  
 
   const toggleVariant = useCallback(() => {
     if (variant === "LOGIN") {
@@ -23,22 +38,54 @@ const AuthForm = () => {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
       name: "",
       email: "",
       password: "",
+      image: "",
     },
   });
+
+  const image = watch("image");
+
+  const setImageValue = (id: string, value: any) => {
+    setValue(id, value, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
+  };
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
 
     if (variant === "REGISTER") {
-      // Axios Register
-    } else {
-      //NextAuth SignIn
+      axios
+        .post("/api/register", data)
+        .then(() => signIn('credentials', data))
+        .catch(() => toast.error("Missing credentials or image!"))
+        .finally(() => setIsLoading(false));
+    } 
+    else {
+      signIn('credentials', {
+        ...data,
+        redirect: false
+      })
+      .then((callback) => {
+        if (callback?.error) {
+          toast.error("Wrong email/password")
+        }
+
+        if (callback?.ok && !callback?.error) {
+          toast.success("Logged In")
+          router.push("/home")
+        }
+      })
+      .finally(() => setIsLoading(false))
     }
   };
 
@@ -67,7 +114,10 @@ const AuthForm = () => {
         <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
           {variant === "REGISTER" && (
             <div>
-              <Avatar />
+              <Avatar
+                value={image}
+                onChange={(value) => setImageValue("image", value)}
+              />
               <Input
                 id="name"
                 label="Name"
