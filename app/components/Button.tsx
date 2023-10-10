@@ -24,7 +24,8 @@ const Button: React.FC<ButtonProps> = ({ type, onClick, disabled }) => {
         px-3
         py-2
         bg-red-400
-        text-white`,
+        text-white
+        hover:opacity-90`,
         disabled && "opacity-50 cursor-default"
       )}
     >
