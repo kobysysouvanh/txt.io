@@ -13,19 +13,16 @@ import { useRouter } from "next/navigation";
 type Variant = "LOGIN" | "REGISTER";
 
 const AuthForm = () => {
-  const session = useSession()
-  const router = useRouter()
+  const session = useSession();
+  const router = useRouter();
   const [variant, setVariant] = useState<Variant>("LOGIN");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (session?.status === "authenticated") {
-      router.push("/home")
+      router.push("/home/messages");
     }
-  
-    
-  }, [session?.status, router])
-  
+  }, [session?.status, router]);
 
   const toggleVariant = useCallback(() => {
     if (variant === "LOGIN") {
@@ -66,26 +63,25 @@ const AuthForm = () => {
     if (variant === "REGISTER") {
       axios
         .post("/api/register", data)
-        .then(() => signIn('credentials', data))
+        .then(() => signIn("credentials", data))
         .catch(() => toast.error("Missing credentials or image!"))
         .finally(() => setIsLoading(false));
-    } 
-    else {
-      signIn('credentials', {
+    } else {
+      signIn("credentials", {
         ...data,
-        redirect: false
+        redirect: false,
       })
-      .then((callback) => {
-        if (callback?.error) {
-          toast.error("Wrong email/password")
-        }
+        .then((callback) => {
+          if (callback?.error) {
+            toast.error("Wrong email/password");
+          }
 
-        if (callback?.ok && !callback?.error) {
-          toast.success("Logged In")
-          router.push("/home")
-        }
-      })
-      .finally(() => setIsLoading(false))
+          if (callback?.ok && !callback?.error) {
+            toast.success("Logged In");
+            router.push("/home/messages");
+          }
+        })
+        .finally(() => setIsLoading(false));
     }
   };
 
