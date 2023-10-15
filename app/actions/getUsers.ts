@@ -26,4 +26,4 @@ const getUsers = async () => {
   }
 };
 
-export default getUsers
+export default getUsers;

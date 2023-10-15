@@ -1,11 +1,11 @@
-import EmptyState from '@/app/components/EmptyState'
+import EmptyState from "@/app/components/EmptyState";
 
 const UsersPage = () => {
   return (
     <div className="h-full hidden lg:block lg:pl-80">
-      <EmptyState/>
+      <EmptyState />
     </div>
-  )
-}
+  );
+};
 
-export default UsersPage
+export default UsersPage;

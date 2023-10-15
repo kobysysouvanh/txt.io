@@ -7,9 +7,10 @@ interface ButtonProps {
 
   onClick?: () => void;
   disabled?: boolean;
+  children: React.ReactNode
 }
 
-const Button: React.FC<ButtonProps> = ({ type, onClick, disabled }) => {
+const Button: React.FC<ButtonProps> = ({ type, onClick, disabled, children }) => {
   return (
     <button
       onClick={onClick}
@@ -29,7 +30,7 @@ const Button: React.FC<ButtonProps> = ({ type, onClick, disabled }) => {
         disabled && "opacity-50 cursor-default"
       )}
     >
-      Continue
+      {children}
     </button>
   );
 };

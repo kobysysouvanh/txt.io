@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import ToasterContext from "./context/ToasterContext";
 import AuthContext from "./context/AuthContext";
+import ActiveStatus from "./components/avatar/ActiveStatus";
 
 const nunito = Nunito({ subsets: ["latin"] });
 
@@ -21,6 +22,7 @@ export default function RootLayout({
       <body className={nunito.className}>
         <AuthContext>
           <ToasterContext />
+          <ActiveStatus/>
           {children}
         </AuthContext>
       </body>

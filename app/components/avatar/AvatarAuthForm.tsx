@@ -31,7 +31,14 @@ const AvatarAuthForm: React.FC<AvatarAuthFormProps> = ({ onChange, value }) => {
           return (
             <div className="cursor-pointer relative" onClick={() => open?.()}>
               <div className="flex border-2 rounded-[50%] w-[80px] h-[80px] overflow-hidden">
-                <Image src={value || "/avatar.jpg"} alt="avatar" width={80} height={80} className="object-cover" unoptimized/>
+                <Image
+                  src={value || "/avatar.jpg"}
+                  alt="avatar"
+                  width={80}
+                  height={80}
+                  className="object-cover"
+                  unoptimized
+                />
               </div>
               <div className="w-6 h-6 flex border items-center justify-center rounded-full absolute bg-white bottom-0 right-0">
                 <FaPlus className="w-4 h-4 text-red-400" />
@@ -44,4 +51,4 @@ const AvatarAuthForm: React.FC<AvatarAuthFormProps> = ({ onChange, value }) => {
   );
 };
 
-export default AvatarAuthForm
+export default AvatarAuthForm;

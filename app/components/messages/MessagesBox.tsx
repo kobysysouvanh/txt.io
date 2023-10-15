@@ -6,8 +6,9 @@ import useOtherUser from "@/app/hooks/useOtherUser";
 import { useSession } from "next-auth/react";
 import { useCallback, useMemo } from "react";
 import clsx from "clsx";
-import Avatar from "../Avatar";
+import Avatar from "../avatar/Avatar";
 import { format } from "date-fns";
+import AvatarGroup from "../avatar/AvatarGroup";
 
 interface MessagesBoxProps {
   data: FullConversationType;
@@ -49,42 +50,64 @@ const MessagesBox: React.FC<MessagesBoxProps> = ({ data, selected }) => {
 
   const lastMessageText = useMemo(() => {
     if (lastMessage?.image) {
-      return 'Sent an image'
+      return "Sent an image";
     }
 
     if (lastMessage?.body) {
-      return lastMessage.body
+      return lastMessage.body;
     }
 
-    return "Started a conversation"
-  }, [lastMessage])
-  
+    return "Started a conversation";
+  }, [lastMessage]);
 
-  return <div onClick={handleClick}
-    className={clsx(`w-full relative p-3 flex items-center space-x-3 bg-neutral-100 hover:bg-red-400 group/userbox rounded-md transition cursor-pointer duration-300`, selected ? 'bg-red-400 group/userbox:text-white' : 'bg-neutral-100')}
-  >
-    <Avatar user={otherUser}/>
-    <div className="min-w-0 flex-1">
-      <div className="focus:outline-none">
-        <div className="flex justify-between items-center mb-1">
-          <p className={clsx(`text-lg font-semibold text-gray-900 group-hover/userbox:text-white`, selected ? 'text-white' : 'text-black')}>{data.name || otherUser.name}</p>
-          {lastMessage?.createdAt && (
+  return (
+    <div
+      onClick={handleClick}
+      className={clsx(
+        `w-full relative p-3 flex items-center space-x-3 bg-neutral-100 hover:bg-red-400 group/userbox rounded-md transition cursor-pointer duration-300`,
+        selected ? "bg-red-400 group/userbox:text-white" : "bg-neutral-100"
+      )}
+    >
+      {data.isGroup ? (
+        <AvatarGroup users={data.users} />
+      ) : (
+        <Avatar user={otherUser} />
+      )}
+      <div className="min-w-0 flex-1">
+        <div className="focus:outline-none">
+          <div className="flex justify-between items-center mb-1">
             <p
-             className="text-sm text-gray-500 group-hover/userbox:text-white"
+              className={clsx(
+                `text-lg font-semibold text-gray-900 group-hover/userbox:text-white`,
+                selected ? "text-white" : "text-black"
+              )}
             >
-              {format(new Date(lastMessage.createdAt), 'p')}
+              {data.name || otherUser.name}
             </p>
-          )}
+            {lastMessage?.createdAt && (
+              <p
+                className={clsx(
+                  `text-sm text-gray-500 group-hover/userbox:text-white`,
+                  selected ? "text-white" : "text-neutral-500"
+                )}
+              >
+                {format(new Date(lastMessage.createdAt), "p")}
+              </p>
+            )}
+          </div>
+          <p
+            className={clsx(
+              `truncate group-hover/userbox:text-white`,
+              hasSeen ? "text-gray-500" : "text-black font-bold",
+              selected ? "text-white" : "text-black"
+            )}
+          >
+            {lastMessageText}
+          </p>
         </div>
-        <p
-         className={clsx(`truncate group-hover/userbox:text-white`, hasSeen ? 'text-gray-500' : 'text-black font-bold')}
-        >
-          {lastMessageText}
-        </p>
       </div>
-
     </div>
-  </div>;
+  );
 };
 
 export default MessagesBox;

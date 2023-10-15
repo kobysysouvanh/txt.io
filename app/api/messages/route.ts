@@ -1,90 +1,87 @@
-import getCurrentUser from "@/app/actions/getCurrentUser";
-import prismadb from "@/app/libs/prismadb";
-import { NextResponse } from "next/server";
+import getCurrentUser from "@/app/actions/getCurrentUser"
+import prismadb from "@/app/libs/prismadb"
+import { NextResponse } from "next/server"
+import { pusherServer } from "@/app/libs/pusher"
+
 
 export async function POST(request: Request) {
-  try {
-    const currentUser = await getCurrentUser();
-    const body = await request.json();
+    try {
+        const currentUser = await getCurrentUser()
 
-    const { userId, isGroup, members, name } = body;
+        const body = await request.json()
 
-    if (!currentUser?.email) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+        const {
+            message,
+            image,
+            conversationId
+        } = body
 
-    if (isGroup && (!members || members.length < 2 || !name)) {
-      return new NextResponse("Invalid", { status: 400 });
-    }
-
-    if (isGroup) {
-      const newGroup = await prismadb.conversation.create({
-        data: {
-          name,
-          isGroup,
-          users: {
-            connect: [
-              ...members.map((member: { value: string }) => ({
-                id: member.value,
-              })),
-              {
-                id: currentUser.id,
-              },
-            ],
-          },
-        },
-        include: {
-          users: true,
-        },
-      });
-
-      return NextResponse.json(newGroup);
-    }
-
-    const existingConversation = await prismadb.conversation.findMany({
-      where: {
-        OR: [
-          {
-            userIds: {
-              equals: [currentUser.id, userId],
-            },
-          },
-          {
-            userIds: {
-                equals: [userId, currentUser.id]
-            }
-          }
-        ],
-      },
-    });
-
-    const singleConversation = existingConversation[0]
-
-    if (singleConversation) {
-        return NextResponse.json(singleConversation)
-    }
-
-    const newConversation = await prismadb.conversation.create({
-        data: {
-            users: {
-                connect: [
-                    {
-                        id: currentUser.id
-                    },
-                    {
-                        id: userId
-                    }
-                ]
-            }
-        },
-        include: {
-            users: true
+        if (!currentUser?.id || !currentUser?.email) {
+            return new NextResponse("Unauthorized", { status: 401 })
         }
-    })
 
-    return NextResponse.json(newConversation)
+        const newMessage = await prismadb.message.create({
+            data: {
+                body: message,
+                image: image,
+                conversation: {
+                    connect: {
+                        id: conversationId
+                    }
+                },
+                sender: {
+                    connect: {
+                        id: currentUser.id
+                    }
+                },
+                seen: {
+                    connect: {
+                        id: currentUser.id
+                    }
+                }
+            },
+            include: {
+                seen: true,
+                sender: true
+            }
+        })
 
-  } catch (error: any) {
-    return new NextResponse("Internal Error", { status: 500 });
-  }
+        const updatedConversation = await prismadb.conversation.update({
+            where: {
+                id: conversationId
+            },
+            data: {
+                lastMessageAt: new Date(),
+                messages: {
+                    connect: {
+                        id: newMessage.id
+                    }
+                }
+            },
+            include: {
+                users: true,
+                messages: {
+                    include: {
+                        seen: true
+                    }
+                }
+            }
+        })
+
+        await pusherServer.trigger(conversationId, 'messages:new', newMessage)
+
+        const lastMessage = updatedConversation.messages[updatedConversation.messages.length - 1]
+
+        updatedConversation.users.map((user) => {
+            pusherServer.trigger(user.email!, 'conversation:update', {
+                id: conversationId,
+                messages: [lastMessage]
+            })
+        })
+
+        return NextResponse.json(newMessage)
+    } catch (error: any) {
+        console.log('[POST_MESSAGES]', error)
+        return new NextResponse("Internal Error", { status: 500 })
+    }
 }

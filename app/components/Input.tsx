@@ -54,7 +54,7 @@ const Input: React.FC<InputProps> = ({
             focus:ring-red-300
             focus:ring-2`,
             errors[id] && "ring-red-600",
-            disabled && 'opacity-50 cursor-default'
+            disabled && "opacity-50 cursor-default"
           )}
         />
       </div>

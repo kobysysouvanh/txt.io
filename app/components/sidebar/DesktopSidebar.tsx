@@ -1,13 +1,14 @@
 "use client";
 
 import useRoutes from "@/app/hooks/useRoutes";
+import { User } from "@prisma/client";
 import { useState } from "react";
-import DesktopItem from "./DesktopItem";
+import ProfileSettingsModal from "../modals/SettingsModal";
 import SidebarProfile from "../profile/SidebarProfile";
-import { User } from "@prisma/client"
+import DesktopItem from "./DesktopItem";
 
 interface DesktopSidebarProps {
-  currentUser: User
+  currentUser: User;
 }
 
 const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
@@ -15,8 +16,14 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div
-      className="
+    <>
+      <ProfileSettingsModal
+        currentUser={currentUser}
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+      />
+      <div
+        className="
       hidden
       justify-between
       lg:fixed
@@ -32,32 +39,36 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
       lg:flex
       lg:flex-col
     "
-    >
-      <nav
-        className="
+      >
+        <nav
+          className="
         flex
         flex-col
         items-center
       "
-      >
-        <h1 className="text-4xl font-bold border-b w-full text-center pb-3">
-          txt.io
-        </h1>
+        >
+          <h1 className="text-4xl font-bold border-b w-full text-center pb-3">
+            txt.io
+          </h1>
 
-        <ul role="list" className="w-full space-y-2 pt-2">
-          {routes.map((route) => (
-            <DesktopItem
-              key={route.label}
-              href={route.href}
-              label={route.label}
-              icon={route.icon}
-              active={route.active}
-            />
-          ))}
-        </ul>
-      </nav>
-      <SidebarProfile currentUser={currentUser} />
-    </div>
+          <ul role="list" className="w-full space-y-2 pt-2">
+            {routes.map((route) => (
+              <DesktopItem
+                key={route.label}
+                href={route.href}
+                label={route.label}
+                icon={route.icon}
+                active={route.active}
+              />
+            ))}
+          </ul>
+        </nav>
+        <SidebarProfile
+          onClick={() => setIsOpen(true)}
+          currentUser={currentUser}
+        />
+      </div>
+    </>
   );
 };
 

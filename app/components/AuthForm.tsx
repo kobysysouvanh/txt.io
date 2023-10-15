@@ -4,7 +4,7 @@ import { useCallback, useState, useEffect } from "react";
 import { useForm, FieldValues, SubmitHandler } from "react-hook-form";
 import Input from "./Input";
 import Button from "./Button";
-import Avatar from "./AvatarAuthForm";
+import Avatar from "./avatar/AvatarAuthForm";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { signIn, useSession } from "next-auth/react";
@@ -138,7 +138,9 @@ const AuthForm = () => {
             errors={errors}
           />
           <div className="py-6">
-            <Button disabled={isLoading} type="submit" />
+            <Button disabled={isLoading} type="submit">
+              Continue
+            </Button>
           </div>
         </form>
         <div className="flex space-x-2 font-medium">
