@@ -34,13 +34,14 @@ const ProfileSideDialog: React.FC<ProfileSideDialogProps> = ({
   const otherUser = useOtherUser(data);
   const { members } = useActiveList()
   const isActive = members.indexOf(otherUser?.email!) !== -1
+  
   const joinedDate = useMemo(() => {
     if (data.isGroup) {
       return format(new Date(data.createdAt), "PP");
     }
 
     return format(new Date(otherUser.createdAt), "PP");
-  }, [otherUser.createdAt, data.createdAt]);
+  }, [otherUser.createdAt, data.createdAt, data.isGroup]);
 
   const title = useMemo(() => {
     return data.name || otherUser.name;
@@ -52,7 +53,7 @@ const ProfileSideDialog: React.FC<ProfileSideDialogProps> = ({
     }
 
     return isActive ? "Active" : "Offline";
-  }, [data]);
+  }, [data, isActive]);
 
   const handleConfirmModal = () => {
     onClose()
