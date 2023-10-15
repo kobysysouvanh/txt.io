@@ -66,7 +66,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({ data, isLast }) => {
                 width={288}
                 className="object-cover cursor-pointer hover:scale-110 transition translate group-hover:brightness-50"
               />
-              <AiOutlineZoomIn size={50} className="absolute left-0 right-0 top-[37%] mx-auto -z-10 group-hover:z-10"/>
+              <AiOutlineZoomIn size={50} className="absolute left-0 right-0 top-[40%] text-white mx-auto -z-10 group-hover:z-10"/>
             </div>
           ) : (
             <div>{data.body}</div>
