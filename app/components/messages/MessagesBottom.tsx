@@ -59,7 +59,7 @@ const MessagesBottom = () => {
   };
 
   return (
-    <div className="p-4 gap-4 flex w-full items-center border-t relative">
+    <div className="p-4 gap-4 flex bottom-0 w-full items-center border-t relative">
       <CldUploadButton
         options={{ maxFiles: 1 }}
         onUpload={handleUpload}

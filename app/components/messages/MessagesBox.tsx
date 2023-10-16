@@ -78,7 +78,7 @@ const MessagesBox: React.FC<MessagesBoxProps> = ({ data, selected }) => {
           <div className="flex justify-between items-center mb-1">
             <p
               className={clsx(
-                `text-lg font-semibold text-gray-900 group-hover/userbox:text-white`,
+                `text-lg font-semibold text-gray-900 group-hover/userbox:text-white truncate w-[150px]`,
                 selected ? "text-white" : "text-black"
               )}
             >

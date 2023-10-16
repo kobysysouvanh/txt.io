@@ -129,7 +129,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
           <div className="flex items-center justify-end gap-x-6">
             <div className="lg:hidden">
-              <Button disabled={isLoading} type="button" onClick={() => signOut()}>
+              <Button
+                disabled={isLoading}
+                type="button"
+                onClick={() => signOut()}
+              >
                 <TbLogout className="w-6 h-6" />
               </Button>
             </div>
